@@ -3,15 +3,15 @@ from itertools import *
 from collections import defaultdict
 
 def newboard():
-    return [[0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,2,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0]]
+    return [[0,0,0,0,8,9,0,0,0],
+        [9,0,1,0,4,0,7,0,0],
+        [8,0,0,5,0,2,0,0,3],
+        [6,0,0,1,0,0,4,0,8],
+        [5,7,0,0,0,4,0,3,0],
+        [0,0,0,0,0,0,2,5,0],
+        [4,0,6,2,5,0,8,0,9],
+        [2,0,0,0,0,0,0,0,0],
+        [7,9,0,6,0,8,0,2,4]]
 
 class Board(list):
     def __init__(self, startboard):
@@ -46,10 +46,10 @@ class Board(list):
         return temp_dict
 
     #note, do we really need this?
-    def get_row(self,y):
+    def get_row(self, y):
         return set(self[y])
 
-    def get_col(self,x):
+    def get_col(self, x):
         col = []
         for row in self:
             col.append(row[x])
@@ -59,9 +59,10 @@ class Board(list):
         square_vals = set()
         square_y = y // 3
         square_x = x // 3
-        square_points = self.square_dict((square_y,square_x))
+        square_points = self.square_dict[(square_y,square_x)]
         for j,i in square_points:
             square_vals.add(self[j][i])
+        return square_vals
 
 
     def get_empties(self):
@@ -73,33 +74,33 @@ class Board(list):
                     temp_dict[(y,x)] = set(i for i in range(1,10))
         return temp_dict
 
-    def get_compare((y,x)):
-        compare = get_row(y) | get_col(x) | get_square(y,x)
+    def get_compare(self, y, x):
+        compare = self.get_row(y) | self.get_col(x) | self.get_square(y,x)
         compare.remove(0)
         return compare
 
-    def narrow((y,x)):
-        compare = get_compare((y,x))
+    def narrow(self, y, x):
+        compare = self.get_compare(y, x)
         self.empty[(y,x)] = self.empty[(y,x)].difference(compare)
 
         # if there's only value in the dict., that's the answer:
             # put answer in board, remove point from 'empties' dict
         if len(self.empty[(y,x)]) == 1:
             self[y][x] = self.empty[(y,x)].pop()
-            empty.pop((y,x))
+            self.empty.pop((y,x))
 
 
 
 
-    def narrow_all():
+    def narrow_all(self):
         for key in self.empty.keys():
-            narrow(key)
+            self.narrow(key[0], key[1])
 
     # optimization: only narrow squares in reach of those recently changed?
 
-    def solve_all():
+    def solve_all(self):
         while self.empty.keys():
-            narrow_all()
+            self.narrow_all()
         return "solved!"
 
 
