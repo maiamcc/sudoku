@@ -2,19 +2,6 @@ import copy
 from itertools import *
 from collections import defaultdict
 
-def draw_board(board):
-    for i in range(0,9):
-        this_row = board[i][:]
-        this_row.insert(6, "|")
-        this_row.insert(3, "|")
-        # vert_divide = "    |    |    |"
-        row_string = "  ".join(map(str, this_row))
-        if i in [2, 5]:
-            print row_string
-            print "________________________________"
-        else:
-            print row_string
-
 def newboard():
     return [[0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,2,0,0,0],
@@ -26,12 +13,10 @@ def newboard():
         [0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0]]
 
-
-
 class Board(list):
     def __init__(self, startboard):
         super(Board, self).__init__(startboard)
-        self.empty = self.getempties()
+        self.empty = self.get_empties()
         self.n = 9
         self.square_dict = self.make_square_dict()
 
@@ -59,6 +44,7 @@ class Board(list):
                 for j,i in square_gen:
                     temp_dict[(y,x)].append((j,i))
         return temp_dict
+
     #note, do we really need this?
     def get_row(self,y):
         return set(self[y])
@@ -76,9 +62,9 @@ class Board(list):
         square_points = self.square_dict((square_y,square_x))
         for j,i in square_points:
             square_vals.add(self[j][i])
-        
 
-    def getempties(self):
+
+    def get_empties(self):
         # populate dictionary with possible values for all empty squares
         temp_dict = {}
         for y in range(self.__len__()):
@@ -94,10 +80,22 @@ class Board(list):
 
     def narrow((y,x)):
         compare = get_compare((y,x))
+        self.empty[(y,x)] = self.empty[(y,x)].difference(compare)
+
+        # if there's only value in the dict., that's the answer:
+            # put answer in board, remove point from 'empties' dict
+        if len(self.empty[(y,x)]) == 1:
+            self[y][x] = self.empty[(y,x)].pop()
+            empty.pop((y,x))
+
+
+
 
     def narrow_all():
         for key in self.empty.keys():
             narrow(key)
+
+    # optimization: only narrow squares in reach of those recently changed?
 
     def solve_all():
         while self.empty.keys():
