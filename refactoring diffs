@@ -1,0 +1,69 @@
+class Board(list):
+     def __init__(self, startboard):
+         super(Board, self).__init__(startboard)
+-        self.empty = self.get_empties()
+         self.n = 9
+-        self.square_dict = self.make_square_dict()
++        self.empties = get_empties(self)
++        self.square_dict = make_square_dict(self)
+
+     def __str__(self):
+         print_str = ""
+@@ -34,76 +34,75 @@ class Board(list):
+                 print_str += (row_string)
+         return print_str
+
+-    def make_square_dict(self):
+-        temp_dict = defaultdict(list)
+-        for y in range(3):
+-            for x in range(3):
+-                y_coords = [y * 3 + i for i in range(3)]
+-                x_coords = [x * 3 + i for i in range(3)]
+-                square_gen = product(y_coords,x_coords)
+-                for j,i in square_gen:
+-                    temp_dict[(y,x)].append((j,i))
+-        return temp_dict
++def make_square_dict(board):
++    temp_dict = defaultdict(list)
++    for y in range(3):
++        for x in range(3):
++            y_coords = [y * 3 + i for i in range(3)]
++            x_coords = [x * 3 + i for i in range(3)]
++            square_gen = product(y_coords,x_coords)
++            for j,i in square_gen:
++                temp_dict[(y,x)].append((j,i))
++    return temp_dict
+
+-    #note, do we really need this?
+-    def get_row(self, y):
+-        return set(self[y])
++def get_row(board, y):
++    return set(board[y])
+
+-    def get_col(self, x):
+-        col = []
+-        for row in self:
+-            col.append(row[x])
+-        return set(col)
++def get_col(board, x):
++    col = []
++    for row in board:
++        col.append(row[x])
++    return set(col)
+
+-    def get_square(self, y, x):
+-        square_vals = set()
+-        square_y = y // 3
+-        square_x = x // 3
+-        square_points = self.square_dict[(square_y,square_x)]
+-        for j,i in square_points:
+-            square_vals.add(self[j][i])
+-        return square_vals
++def get_square(board, y, x):
++    square_vals = set()
++    square_y = y // 3
++    square_x = x // 3
++    square_points = board.square_dict[(square_y,square_x)]
++    for j,i in square_points:
++        square_vals.add(board[j][i])
++    return square_vals
