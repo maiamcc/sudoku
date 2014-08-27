@@ -8,11 +8,12 @@ class Dict_Init(object):
 
     def make_dict(startpuzzle):
         pass
+    # we need to be able to pass down the size of our board, rather than hardcoding
 
 class Board_Accessor(object):
     def get_square_val(self, dict, y, x):
         if len(dict[(y,x)]) == 1:
-            return dict[(y,x)][0]
+            return dict[(y,x)].pop()
         elif len(dict[(y,x)]) < 1:
             raise NoValueError("There are no possibilities for this square! You done fucked up.")
         else:
@@ -21,7 +22,7 @@ class Board_Accessor(object):
     def get_row(self, dict, y):
         row = set()
         for i in range(9):
-            val = get_square_val(dict, y, i)
+            val = self.get_square_val(dict, y, i)
             if val:
                 row.add(val)
         return row
@@ -29,7 +30,7 @@ class Board_Accessor(object):
     def get_col(self, dict, x):
         col = set()
         for i in range(9):
-            val = get_square_val(dict, i, x)
+            val = self.get_square_val(dict, i, x)
             if val:
                 col.add(val)
         return col
@@ -39,9 +40,8 @@ class Board_Accessor(object):
         y_coords = [(y // 3) * 3 + i for i in range(3)]
         x_coords = [(x // 3) * 3 + i for i in range(3)]
         box_gen = product(y_coords,x_coords)
-        box_points = board.box_dict[(box_y,box_x)]
         for j,i in box_gen:
-            val = get_square_val(dict, j, i)
+            val = self.get_square_val(dict, j, i)
             if val:
                 box.add(val)
         return box
