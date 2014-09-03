@@ -9,6 +9,7 @@ class Dict_Init(object):
     def make_dict(startpuzzle):
         pass
     # we need to be able to pass down the size of our board, rather than hardcoding
+    # returns a dict and an integer, the size of the board
 
 class Board_Accessor(object):
     def get_square_val(self, dict, y, x):
@@ -46,12 +47,37 @@ class Board_Accessor(object):
                 box.add(val)
         return box
 
+    def is_solved(self, dict):
+        solved = True
+        # if any values in dict are not lists of len 1, then sovled = False
+        return solved
+
 class Narrower(object):
-    pass
+
+    def narrow_one(self, y, x, dict, board_accessor=Board_Accessor()):
+        possibilities = set()
+        return possibilities
+
+    def narrow_all(self, dict, board_accessor=Board_Accessor()):
+        for (y,x) in dict.keys():
+            dict[(y,x)] = self.narrow_one(y,x,dict,board_accessor)
+        return dict
 
 class Printer(object):
     pass
 
 
 def solve_dict(startpuzzle, dict_initializer=Dict_Init(), board_accessor=Board_Accessor(), narrower=Narrower(), printer=Printer()):
-    pass
+
+    sudoku_dict, n = dict_initializer.make_dict(startpuzzle)
+
+    while !board_accessor.is_solved(sudoku_dict):
+        sudoku_dict = narrower.narrow_all(sudoku_dict, board_accessor)
+
+    print "solved!\n"
+    printer.render(sudoku_dict)
+
+
+
+
+
