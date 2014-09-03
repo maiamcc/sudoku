@@ -4,6 +4,7 @@ from collections import defaultdict
 
 class NoValueError(Exception): pass
 
+#make this just a function
 class Dict_Init(object):
 
     def make_dict(startpuzzle):
@@ -20,13 +21,18 @@ class Board_Accessor(object):
         else:
             return None
 
-    def get_row(self, dict, y):
+    #pass in n rather than using 9
+    @classmethod
+    def get_row(cls, dict, y):
         row = set()
         for i in range(9):
-            val = self.get_square_val(dict, y, i)
+            val = cls.get_square_val(dict, y, i)
             if val:
                 row.add(val)
         return row
+
+    # to call: Board_Accessor.get_row()
+
 
     def get_col(self, dict, x):
         col = set()
@@ -66,7 +72,7 @@ class Narrower(object):
 class Printer(object):
     pass
 
-
+#pass functions instead of classes as args
 def solve_dict(startpuzzle, dict_initializer=Dict_Init(), board_accessor=Board_Accessor(), narrower=Narrower(), printer=Printer()):
 
     sudoku_dict, n = dict_initializer.make_dict(startpuzzle)
