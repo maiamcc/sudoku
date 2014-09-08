@@ -1,11 +1,29 @@
-import copy
+import copy, math
 from itertools import *
 from collections import defaultdict
 
 class NoValueError(Exception): pass
 
 def make_dict(startpuzzle):
-    pass
+    '''takes in a startpuzzle as a long string where zero reprsesents an unfilled sqare and a digit 1-9 is a value. Returns a dictionary where keys are coordinates and values are initial possible values for a square. For a square that already has a value this will make a list containing only that value, otherwise will make a list of [1..9]'''
+    n = math.sqrt(len(startpuzzle))
+    if n%1 != 0.0:
+        raise ValueError('Your board is not square!')
+    else:
+        n = int(n)
+    puzdict = defaultdict(set)
+
+    for i in range(len(startpuzzle)):
+        y = i // n
+        x = i % n
+        val = int(startpuzzle[i])
+        if val == 0:
+            puzdict[(y,x)] = set(range(1,n+1))
+        else:
+            puzdict[(y,x)].add(val)
+    return puzdict
+            
+
 # we need to be able to pass down the size of our board, rather than hardcoding
 # returns a dict and an integer, the size of the board
 
@@ -15,7 +33,7 @@ class Board_Accessor(object):
         """Returns the value of a square, if that square is solved
             (i.e. has only one possibility). Otherwise, returns None."""
         if len(dict[(y,x)]) == 1:
-            return dict[(y,x)].pop()
+            return list(dict[(y,x)])[0]
         elif len(dict[(y,x)]) < 1:
             raise NoValueError("There are no possibilities for this square! You done fucked up.")
         else:
@@ -54,7 +72,7 @@ class Board_Accessor(object):
 
     @classmethod
     def get_compare(cls, dict, y, x):
-        compare = cls.get_row(dict, y) | cls.get_col(dict, x) | cls.get_square(dict, y, x)
+        compare = cls.get_row(dict, y) | cls.get_col(dict, x) | cls.get_box(dict, y, x)
         return compare
 
     @classmethod
