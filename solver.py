@@ -22,7 +22,7 @@ def make_dict(startpuzzle):
         else:
             puzdict[(y,x)].add(val)
     return puzdict
-            
+
 
 # we need to be able to pass down the size of our board, rather than hardcoding
 # returns a dict and an integer, the size of the board
@@ -84,7 +84,7 @@ class Board_Accessor(object):
 class Narrower(object):
 
     @classmethod
-    def narrow_one(cls, y, x, dict, compare_func=Board_Accessor.get_compare):
+    def narrow_one(cls, dict, y, x, compare_func=Board_Accessor.get_compare):
         """Compares a given square to its row/col/box, narrows down
             possibilities, returns updated possibility set."""
         compare = compare_func(dict, y, x)
