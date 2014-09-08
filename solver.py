@@ -10,7 +10,7 @@ class Dict_Init(object):
         pass
     # we need to be able to pass down the size of our board, rather than hardcoding
 
-class Board_Accessor(object):
+
     def get_square_val(self, dict, y, x):
         if len(dict[(y,x)]) == 1:
             return dict[(y,x)].pop()
@@ -48,6 +48,16 @@ class Board_Accessor(object):
 
 class Narrower(object):
     pass
+    # narrow one square
+    # def narrow(self, Board_Accessor() <<-- or maybe only get compare)
+    def narrow(self):
+        does stuff
+        get_squ()
+
+
+
+    # narrows whole board
+
 
 class Printer(object):
     pass
@@ -55,3 +65,5 @@ class Printer(object):
 
 def solve_dict(startpuzzle, dict_initializer=Dict_Init(), board_accessor=Board_Accessor(), narrower=Narrower(), printer=Printer()):
     pass
+
+

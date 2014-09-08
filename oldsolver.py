@@ -99,6 +99,7 @@ def narrow(board, y, x):
 def narrow_all(board):
     for key in board.empties.keys():
         narrow(board, key[0], key[1])
+    return board
 
 # optimization: only narrow squares in reach of those recently changed?
 
