@@ -4,16 +4,16 @@ from collections import defaultdict
 
 class NoValueError(Exception): pass
 
-#make this just a function
-class Dict_Init(object):
+def make_dict(startpuzzle):
+    pass
+# we need to be able to pass down the size of our board, rather than hardcoding
+# returns a dict and an integer, the size of the board
 
-    def make_dict(startpuzzle):
-        pass
-    # we need to be able to pass down the size of our board, rather than hardcoding
-    # returns a dict and an integer, the size of the board
-
-
-    def get_square_val(self, dict, y, x):
+class Board_Accessor(object):
+    @classmethod
+    def get_square_val(cls, dict, y, x):
+        """Returns the value of a square, if that square is solved
+            (i.e. has only one possibility). Otherwise, returns None."""
         if len(dict[(y,x)]) == 1:
             return dict[(y,x)].pop()
         elif len(dict[(y,x)]) < 1:
@@ -31,51 +31,62 @@ class Dict_Init(object):
                 row.add(val)
         return row
 
-    # to call: Board_Accessor.get_row()
-
-
-    def get_col(self, dict, x):
+    @classmethod
+    def get_col(cls, dict, x):
         col = set()
         for i in range(9):
-            val = self.get_square_val(dict, i, x)
+            val = cls.get_square_val(dict, i, x)
             if val:
                 col.add(val)
         return col
 
-    def get_box(self, dict, y, x):
+    @classmethod
+    def get_box(cls, dict, y, x):
         box = set()
         y_coords = [(y // 3) * 3 + i for i in range(3)]
         x_coords = [(x // 3) * 3 + i for i in range(3)]
         box_gen = product(y_coords,x_coords)
         for j,i in box_gen:
-            val = self.get_square_val(dict, j, i)
+            val = cls.get_square_val(dict, j, i)
             if val:
                 box.add(val)
         return box
 
-    def is_solved(self, dict):
+    @classmethod
+    def get_compare(cls, dict, y, x):
+        compare = cls.get_row(dict, y) | cls.get_col(dict, x) | cls.get_square(dict, y, x)
+        return compare
+
+    @classmethod
+    def is_solved(cls, dict):
         solved = True
         # if any values in dict are not lists of len 1, then sovled = False
         return solved
 
 class Narrower(object):
-    def narrow_one(self, y, x, dict, board_accessor=Board_Accessor()):
-        possibilities = set()
-        return possibilities
 
-    def narrow_all(self, dict, board_accessor=Board_Accessor()):
+    @classmethod
+    def narrow_one(cls, y, x, dict, compare_func=Board_Accessor.get_compare):
+        """Compares a given square to its row/col/box, narrows down
+            possibilities, returns updated possibility set."""
+        compare = compare_func(dict, y, x)
+        return dict[(y,x)].difference(compare)
+
+    @classmethod
+    def narrow_all(cls, dict, compare_func=Board_Accessor.get_compare):
         for (y,x) in dict.keys():
-            dict[(y,x)] = self.narrow_one(y,x,dict,board_accessor)
+            if len(dict[(y,x)]) > 1:
+                dict[(y,x)] = cls.narrow_one(y,x,dict,compare_func)
         return dict
 
 class Printer(object):
     pass
 
 #pass functions instead of classes as args
-def solve_dict(startpuzzle, dict_initializer=Dict_Init(), board_accessor=Board_Accessor(), narrower=Narrower(), printer=Printer()):
-    sudoku_dict, n = dict_initializer.make_dict(startpuzzle)
+def solve_dict(startpuzzle, dict_maker_func=make_dict, compare_func=Board_Accessor.get_compare, narrower=Narrower(), printer=Printer()):
+    sudoku_dict, n = dict_maker_func(startpuzzle)
 
-    while !board_accessor.is_solved(sudoku_dict):
+    while not board_accessor.is_solved(sudoku_dict):
         sudoku_dict = narrower.narrow_all(sudoku_dict, board_accessor)
 
     print "solved!\n"
