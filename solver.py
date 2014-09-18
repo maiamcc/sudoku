@@ -21,7 +21,7 @@ def make_dict(startpuzzle):
             puzdict[(y,x)] = set(range(1,n+1))
         else:
             puzdict[(y,x)].add(val)
-    return puzdict
+    return puzdict, n
 
 
 # we need to be able to pass down the size of our board, rather than hardcoding
@@ -78,7 +78,10 @@ class Board_Accessor(object):
     @classmethod
     def is_solved(cls, dict):
         solved = True
-        # if any values in dict are not lists of len 1, then sovled = False
+        for val in dict.values():
+            if len(val) > 1:
+                solved = False
+                break
         return solved
 
 class Narrower(object):
@@ -94,20 +97,32 @@ class Narrower(object):
     def narrow_all(cls, dict, compare_func=Board_Accessor.get_compare):
         for (y,x) in dict.keys():
             if len(dict[(y,x)]) > 1:
-                dict[(y,x)] = cls.narrow_one(y,x,dict,compare_func)
+                dict[(y,x)] = cls.narrow_one(dict, y, x, compare_func)
         return dict
 
-class Printer(object):
-    pass
+def render(dict):
+    for i in range(9):
+        if i%3 == 0 and i != 0:
+            print "________________________________"
+        row = []
+        for j in range(9):
+            if j%3 == 0 and j != 0:
+                row.append("|")
+            if len(dict[(i,j)]) == 1:
+                val = list(dict[(i,j)])[0]
+            else:
+                val = 0
+            row.append(str(val))
+        print "  ".join(row)
 
 #pass functions instead of classes as args
-def solve_dict(startpuzzle, dict_maker_func=make_dict, compare_func=Board_Accessor.get_compare, narrower=Narrower(), printer=Printer()):
+def solve_dict(startpuzzle, dict_maker_func=make_dict, compare_func=Board_Accessor.get_compare, narrower_func=Narrower.narrow_all, printer=render):
     sudoku_dict, n = dict_maker_func(startpuzzle)
 
-    while not board_accessor.is_solved(sudoku_dict):
-        sudoku_dict = narrower.narrow_all(sudoku_dict, board_accessor)
+    while not Board_Accessor.is_solved(sudoku_dict):
+        sudoku_dict = narrower_func(sudoku_dict, compare_func)
 
     print "solved!\n"
-    printer.render(sudoku_dict)
+    printer(sudoku_dict)
 
 
